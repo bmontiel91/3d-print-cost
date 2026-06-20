@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Costos 3D 🖨️</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖨️</text></svg>">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🖨️ Costos 3D</h1>
+    <button id="themeToggle" class="icon-btn" title="Modo oscuro/claro">🌙</button>
+  </header>
+
+  <form id="calcForm" class="form-grid">
+    <!-- Sección: Datos básicos -->
+    <fieldset>
+      <legend>📋 Datos básicos</legend>
+      <div class="field-row">
+        <div class="field half">
+          <label>Nombre de la pieza</label>
+          <input type="text" id="nombre" placeholder="ej: Llavero gato">
+        </div>
+        <div class="field half">
+          <label>Tipo de proyecto</label>
+          <select id="tipoProyecto">
+            <option value="ninguno">Genérico (sin accesorios)</option>
+            <option value="llavero">Llavero</option>
+            <option value="lampara">Lámpara</option>
+            <option value="soporte">Soporte / Holder</option>
+            <option value="macetero">Macetero</option>
+            <option value="juguete">Juguete / Figura</option>
+            <option value="caja">Cofre / Caja</option>
+            <option value="electronico">Proyecto electrónico</option>
+            <option value="otro">Otro (personalizado)</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Sección: Filamento -->
+    <fieldset>
+      <legend>🧵 Filamento</legend>
+      <div class="field-row">
+        <div class="field third">
+          <label>Precio rollo ($)</label>
+          <input type="number" id="precioRollo" value="12000" min="1" step="500">
+        </div>
+        <div class="field third">
+          <label>Peso rollo (g)</label>
+          <input type="number" id="pesoRollo" value="1000" min="1" step="50">
+        </div>
+        <div class="field third">
+          <label>Gramos usados</label>
+          <input type="number" id="gramosUsados" value="" min="0" step="0.1" placeholder="0">
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Sección: Electricidad -->
+    <fieldset>
+      <legend>⚡ Electricidad</legend>
+      <div class="field-row">
+        <div class="field third">
+          <label>Potencia impresora (W)</label>
+          <input type="number" id="potencia" value="300" min="1" step="10">
+        </div>
+        <div class="field third">
+          <label>Tiempo (horas)</label>
+          <input type="number" id="tiempoHoras" value="" min="0" step="0.25" placeholder="0">
+        </div>
+        <div class="field third">
+          <label>Tarifa eléctrica ($/kWh)</label>
+          <input type="number" id="tarifaLuz" value="200" min="1" step="10">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field third">
+          <label>Tiempo (minutos)</label>
+          <input type="number" id="tiempoMinutos" value="" min="0" step="5" placeholder="0">
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Sección: Impresora -->
+    <fieldset>
+      <legend>🖨️ Impresora</legend>
+      <div class="field-row">
+        <div class="field half">
+          <label>Precio de la impresora ($)</label>
+          <input type="number" id="precioImpresora" value="340000" min="1" step="10000">
+        </div>
+        <div class="field half">
+          <label>Vida útil estimada (horas)</label>
+          <input type="number" id="vidaUtil" value="3000" min="100" step="500">
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Sección: Costos adicionales -->
+    <fieldset>
+      <legend>➕ Costos adicionales</legend>
+      <div class="field-row">
+        <div class="field third">
+          <label>Mantenimiento ($/hora)</label>
+          <input type="number" id="mantenimiento" value="100" min="0" step="10">
+        </div>
+        <div class="field third">
+          <label>Mano de obra (horas)</label>
+          <input type="number" id="manoObraHoras" value="0" min="0" step="0.25">
+        </div>
+        <div class="field third">
+          <label>Valor hora ($/h)</label>
+          <input type="number" id="valorHora" value="8000" min="0" step="1000">
+        </div>
+      </div>
+
+      <!-- Accesorios (dinámico según tipo) -->
+      <details id="accesoriosSection" open>
+        <summary>🔧 Accesorios</summary>
+        <div id="accesoriosContainer">
+          <div class="accesorio-row" data-index="0">
+            <input type="text" class="acc-nombre" placeholder="Nombre" value="">
+            <input type="number" class="acc-cant" placeholder="Cant" value="1" min="0" step="1">
+            <input type="number" class="acc-precio" placeholder="$ c/u" value="0" min="0" step="50">
+            <button type="button" class="icon-btn remove-acc" title="Eliminar">✕</button>
+          </div>
+        </div>
+        <button type="button" id="addAccesorio" class="btn-small">+ Agregar accesorio</button>
+      </details>
+
+      <!-- Envoltorio -->
+      <details open>
+        <summary>📦 Envoltorio / Empaque</summary>
+        <div class="field-row">
+          <div class="field third">
+            <label>Tipo de empaque</label>
+            <select id="tipoEmpaque">
+              <option value="ninguno">Ninguno</option>
+              <option value="bolsa">Bolsa sellada</option>
+              <option value="cajaChica">Caja chica (10x7x5)</option>
+              <option value="cajaMediana">Caja mediana (20x15x10)</option>
+              <option value="personalizado">Personalizado</option>
+            </select>
+          </div>
+          <div class="field third">
+            <label>Costo empaque ($)</label>
+            <input type="number" id="costoEmpaque" value="0" min="0" step="50">
+          </div>
+          <div class="field third">
+            <label>Sticker / etiqueta ($)</label>
+            <input type="number" id="costoSticker" value="0" min="0" step="50">
+          </div>
+        </div>
+      </details>
+
+      <!-- Margen -->
+      <details open>
+        <summary>💰 Margen de venta</summary>
+        <div class="field-row">
+          <div class="field third">
+            <label>Margen (%)</label>
+            <input type="number" id="margen" value="50" min="0" max="500" step="5">
+          </div>
+        </div>
+      </details>
+    </fieldset>
+  </form>
+
+  <!-- Resultados -->
+  <section id="resultados" class="result-card hidden">
+    <div class="result-header">
+      <h2>💰 Costo Total</h2>
+      <span id="costoTotalDisplay" class="total-amount">$0</span>
+    </div>
+
+    <div class="result-sub">
+      <span>Precio de venta sugerido:</span>
+      <span id="precioVentaDisplay" class="venta-amount">$0</span>
+      <span id="margenDisplay" class="margen-label"></span>
+    </div>
+
+    <div class="breakdown" id="breakdown">
+      <div class="breakdown-item"><span>🧵 Filamento</span><span id="costoFilamento">$0</span></div>
+      <div class="breakdown-item"><span>⚡ Electricidad</span><span id="costoElectricidad">$0</span></div>
+      <div class="breakdown-item"><span>🖨️ Depreciación</span><span id="costoDepreciacion">$0</span></div>
+      <div class="breakdown-item"><span>🔧 Mantenimiento</span><span id="costoMantenimiento">$0</span></div>
+      <div class="breakdown-item"><span>🔧 Accesorios</span><span id="costoAccesorios">$0</span></div>
+      <div class="breakdown-item"><span>📦 Envoltorio</span><span id="costoEnvoltorio">$0</span></div>
+      <div class="breakdown-item"><span>👷 Mano de obra</span><span id="costoManoObra">$0</span></div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="costChart"></canvas>
+    </div>
+
+    <button type="button" id="guardarBtn" class="btn-primary">💾 Guardar en historial</button>
+  </section>
+
+  <!-- Historial -->
+  <section id="historial" class="hidden">
+    <h2>📊 Historial</h2>
+    <div class="historial-actions">
+      <button type="button" id="exportBtn" class="btn-small">📥 Exportar CSV</button>
+      <button type="button" id="limpiarHistorial" class="btn-small btn-danger">🗑️ Limpiar</button>
+    </div>
+    <div id="historialLista"></div>
+  </section>
+
+  <footer>
+    <p>3D Print Cost Calculator · Los valores por defecto son editables</p>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
