@@ -10,7 +10,7 @@
 :root{--bg:#0f0f0f;--card:#1a1a2e;--card2:#16213e;--text:#e0e0e0;--text2:#a0a0b0;--accent:#f59e0b;--accent2:#eab308;--border:#2a2a4a;--input-bg:#1e1e35;--green:#22c55e;--red:#ef4444;--radius:12px}
 .light{--bg:#f8f9fa;--card:#fff;--card2:#f0f2f5;--text:#1a1a2e;--text2:#666;--border:#dee2e6;--input-bg:#f0f2f5}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;transition:background .3s,color .3s;padding-bottom:40px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;transition:background .3s,color .3s}
 .container{max-width:720px;margin:0 auto;padding:16px}
 header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding:12px 0}
 header h1{font-size:1.5rem;font-weight:700}
@@ -41,7 +41,6 @@ details[open] summary{margin-bottom:8px}
 .btn-small:hover{border-color:var(--accent)}
 .btn-danger{color:var(--red);border-color:var(--red)}
 .btn-primary{background:var(--accent);color:#000;border:none;border-radius:8px;padding:12px 24px;font-size:1rem;font-weight:600;cursor:pointer;width:100%;margin-top:12px}
-.btn-warning{background:var(--accent2);color:#000;border:none;border-radius:6px;padding:4px 10px;font-size:.8rem;cursor:pointer}
 .result-card{background:var(--card);border:2px solid var(--accent);border-radius:var(--radius);padding:20px;margin-bottom:12px}
 .hidden{display:none}
 .result-header h2{font-size:1.1rem;color:var(--text2);margin-bottom:4px}
@@ -55,24 +54,13 @@ details[open] summary{margin-bottom:8px}
 .breakdown-item:last-child{border:none}
 .breakdown-item span:last-child{font-weight:600}
 .chart-container{max-width:280px;margin:12px auto}
-/* Perfiles */
-#perfiles{margin-top:20px}
-#perfiles h2{margin-bottom:8px}
-.perfil-actions{display:flex;gap:8px;margin-bottom:12px}
-.perfil-item{
-  background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 14px;
-  margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:border .2s
-}
-.perfil-item:hover{border-color:var(--accent)}
-.perfil-item .pi-info{flex:1}
-.perfil-item .pi-name{font-weight:600;font-size:.95rem}
-.perfil-item .pi-meta{font-size:.75rem;color:var(--text2);margin-top:2px}
-.perfil-item .pi-tag{display:inline-block;padding:1px 8px;background:var(--accent);color:#000;border-radius:4px;font-size:.7rem;font-weight:600;margin-left:6px}
-.perfil-item .pi-actions{display:flex;gap:4px}
-.perfil-item .pi-actions button{padding:4px 8px;font-size:.75rem;border:none;border-radius:4px;cursor:pointer}
-.perfil-item .pi-actions .load-btn{background:var(--accent);color:#000}
-.perfil-item .pi-actions .del-btn{background:var(--red);color:#fff}
-.perfil-item .pi-actions .dup-btn{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+#historial{margin-top:20px}
+#historial h2{margin-bottom:8px}
+.historial-actions{display:flex;gap:8px;margin-bottom:12px}
+.historial-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.historial-item .hi-date{font-size:.75rem;color:var(--text2)}
+.historial-item .hi-name{font-weight:600}
+.historial-item .hi-cost{color:var(--green);font-weight:700}
 footer{text-align:center;padding:24px;color:var(--text2);font-size:.75rem}
 </style>
 </head>
@@ -83,18 +71,8 @@ footer{text-align:center;padding:24px;color:var(--text2);font-size:.75rem}
     <button id="themeToggle" class="icon-btn">☀️</button>
   </header>
 
-  <!-- BARRA DE PERFILES -->
-  <div id="perfilesBar" style="display:flex;gap:8px;margin-bottom:16px;align-items:center">
-    <span style="color:var(--text2);font-size:.8rem;font-weight:500">📁 Perfil:</span>
-    <select id="selectorPerfil" style="flex:1;padding:8px 10px">
-      <option value="">— Nuevo cálculo —</option>
-    </select>
-    <button type="button" id="btnGuardar" class="btn-small" style="background:var(--accent);color:#000;border:none">💾 Guardar</button>
-    <button type="button" id="btnGuardarComo" class="btn-small">📝 Guardar como...</button>
-    <button type="button" id="btnEliminarPerfil" class="btn-small btn-danger">✕</button>
-  </div>
-
   <form id="calcForm">
+    <!-- DATOS BÁSICOS -->
     <fieldset>
       <legend>📋 Datos básicos</legend>
       <div class="field-row">
@@ -116,51 +94,64 @@ footer{text-align:center;padding:24px;color:var(--text2);font-size:.75rem}
       </div>
     </fieldset>
 
+    <!-- FILAMENTO -->
     <fieldset>
       <legend>🧵 Filamento</legend>
       <div class="field-row">
         <div class="field third"><label>Precio del rollo ($)</label><input type="number" id="precioRollo" value="12000" min="1" step="500"></div>
         <div class="field third"><label>Peso del rollo (g)</label><input type="number" id="pesoRollo" value="1000" min="1" step="50"></div>
-        <div class="field third"><label>Gramos usados</label><input type="number" id="gramosUsados" value="" min="0" step="0.1" placeholder="ej: 50"><div class="hint">Del slicer (Cura, Prusa, Orca)</div></div>
+        <div class="field third"><label>Gramos usados</label><input type="number" id="gramosUsados" value="" min="0" step="0.1" placeholder="ej: 50"><div class="hint">Lo entrega el slicer (Cura, Prusa, Orca)</div></div>
       </div>
     </fieldset>
 
+    <!-- ELECTRICIDAD -->
     <fieldset>
       <legend>⚡ Electricidad</legend>
       <div class="field-row">
-        <div class="field third"><label>Potencia (W)</label><input type="number" id="potencia" value="300" min="1" step="10"><div class="hint">Ender ~300 · Prusa ~200 · Bambu ~350</div></div>
-        <div class="field third"><label>Tiempo (horas)</label><input type="number" id="tiempoHoras" value="" min="0" step="0.5" placeholder="ej: 8"><div class="hint">2.5 = 2h 30m</div></div>
-        <div class="field third"><label>Tarifa ($/kWh)</label><input type="number" id="tarifaLuz" value="200" min="1" step="10"><div class="hint">La Florida · Enel BT1</div></div>
+        <div class="field third"><label>Potencia impresora (W)</label><input type="number" id="potencia" value="300" min="1" step="10"><div class="hint">Ender 3: ~300W · Prusa: ~200W · Bambu: ~350W</div></div>
+        <div class="field third"><label>Tiempo de impresión (horas)</label><input type="number" id="tiempoHoras" value="" min="0" step="0.5" placeholder="ej: 8"><div class="hint">Usa decimales ej: 2.5 = 2h 30m</div></div>
+        <div class="field third"><label>Tarifa eléctrica ($/kWh)</label><input type="number" id="tarifaLuz" value="200" min="1" step="10"><div class="hint">La Florida · Enel BT1 post-descongelamiento</div></div>
       </div>
     </fieldset>
 
+    <!-- IMPRESORA -->
     <fieldset>
       <legend>🖨️ Impresora</legend>
       <div class="field-row">
-        <div class="field half"><label>Precio impresora ($)</label><input type="number" id="precioImpresora" value="340000" min="1" step="10000"></div>
-        <div class="field half"><label>Vida útil (horas)</label><input type="number" id="vidaUtil" value="3000" min="100" step="500"><div class="hint">Básica 2.000 · Media 3.000 · Alta 5.000+</div></div>
+        <div class="field half"><label>Precio de la impresora ($)</label><input type="number" id="precioImpresora" value="340000" min="1" step="10000"></div>
+        <div class="field half"><label>Vida útil estimada (horas)</label><input type="number" id="vidaUtil" value="3000" min="100" step="500"><div class="hint">Básica: 2.000h · Media: 3.000h · Alta: 5.000h+</div></div>
       </div>
     </fieldset>
 
+    <!-- COSTOS ADICIONALES -->
     <fieldset>
       <legend>➕ Costos adicionales</legend>
       <div class="field-row">
-        <div class="field fourth"><label>Mantenimiento ($/h)</label><input type="number" id="mantenimiento" value="100" min="0" step="10"></div>
-        <div class="field fourth"><label>Mano obra (h)</label><input type="number" id="manoObraHoras" value="0" min="0" step="0.25" placeholder="0"></div>
-        <div class="field fourth"><label>Valor hora ($)</label><input type="number" id="valorHora" value="8000" min="0" step="1000"></div>
-        <div class="field fourth"><label>Margen (%)</label><input type="number" id="margen" value="50" min="0" max="500" step="5"></div>
+        <div class="field fourth"><label>Mantenimiento ($/h)</label><input type="number" id="mantenimiento" value="100" min="0" step="10"><div class="hint">Nozzles, PTFE, cama, etc.</div></div>
+        <div class="field fourth"><label>Mano de obra (h)</label><input type="number" id="manoObraHoras" value="0" min="0" step="0.25" placeholder="0"></div>
+        <div class="field fourth"><label>Valor hora ($/h)</label><input type="number" id="valorHora" value="8000" min="0" step="1000"></div>
+        <div class="field fourth"><label>Margen de venta (%)</label><input type="number" id="margen" value="50" min="0" max="500" step="5"></div>
       </div>
 
+      <!-- Accesorios -->
       <details id="accesoriosSection" open>
-        <summary>🔧 Accesorios (según tipo)</summary>
-        <div id="accesoriosContainer"><div class="accesorio-row"><input type="text" class="acc-nombre" placeholder="Nombre" value=""><input type="number" class="acc-cant" placeholder="Cant" value="1" min="0" step="1"><input type="number" class="acc-precio" placeholder="$ c/u" value="0" min="0" step="50"><button type="button" class="icon-btn remove-acc" title="Eliminar">✕</button></div></div>
+        <summary>🔧 Accesorios (según tipo de proyecto)</summary>
+        <div id="accesoriosContainer">
+          <div class="accesorio-row">
+            <input type="text" class="acc-nombre" placeholder="Nombre" value="">
+            <input type="number" class="acc-cant" placeholder="Cant" value="1" min="0" step="1">
+            <input type="number" class="acc-precio" placeholder="$ c/u" value="0" min="0" step="50">
+            <button type="button" class="icon-btn remove-acc" title="Eliminar">✕</button>
+          </div>
+        </div>
         <button type="button" id="addAccesorio" class="btn-small">+ Agregar accesorio</button>
       </details>
 
+      <!-- Envoltorio -->
       <details open>
-        <summary>📦 Envoltorio</summary>
+        <summary>📦 Envoltorio / Empaque</summary>
         <div class="field-row">
-          <div class="field third"><label>Tipo</label>
+          <div class="field third"><label>Tipo de empaque</label>
             <select id="tipoEmpaque">
               <option value="ninguno">Ninguno</option>
               <option value="bolsa">Bolsa sellada</option>
@@ -169,16 +160,25 @@ footer{text-align:center;padding:24px;color:var(--text2);font-size:.75rem}
               <option value="personalizado">Personalizado</option>
             </select>
           </div>
-          <div class="field third"><label>Costo ($)</label><input type="number" id="costoEmpaque" value="0" min="0" step="50"></div>
-          <div class="field third"><label>Sticker ($)</label><input type="number" id="costoSticker" value="0" min="0" step="50"></div>
+          <div class="field third"><label>Costo empaque ($)</label><input type="number" id="costoEmpaque" value="0" min="0" step="50"></div>
+          <div class="field third"><label>Sticker / etiqueta ($)</label><input type="number" id="costoSticker" value="0" min="0" step="50"></div>
         </div>
       </details>
 
+      <!-- Costos de venta (NUEVO) -->
       <details open>
         <summary>💰 Costos de venta</summary>
         <div class="field-row">
-          <div class="field third"><label>Tasa de fallo (%)</label><input type="number" id="tasaFallo" value="0" min="0" max="100" step="1" placeholder="0"><div class="hint">Si 15% falla, el costo real sube</div></div>
-          <div class="field third"><label>Comisión venta (%)</label><input type="number" id="comision" value="0" min="0" max="50" step="1" placeholder="0"><div class="hint">ML ~16% · Shopify ~3%</div></div>
+          <div class="field half">
+            <label>Tasa de fallo (%)</label>
+            <input type="number" id="tasaFallo" value="0" min="0" max="100" step="1" placeholder="0">
+            <div class="hint">Si el 15% de tus impresiones fallan, el costo real por pieza exitosa sube. 0 = todas salen bien.</div>
+          </div>
+          <div class="field half">
+            <label>Comisión de venta (%)</label>
+            <input type="number" id="comision" value="0" min="0" max="50" step="1" placeholder="0">
+            <div class="hint">Mercado Libre: ~16% · Shopify: ~2.9%+300 · Yapo: gratis</div>
+          </div>
         </div>
       </details>
     </fieldset>
@@ -187,6 +187,7 @@ footer{text-align:center;padding:24px;color:var(--text2);font-size:.75rem}
   <!-- RESULTADOS -->
   <section id="resultados" class="result-card hidden">
     <h2>💰 Resultados</h2>
+
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin:12px 0 4px">
       <span style="color:var(--text2);font-size:.9rem">Costo de producción:</span>
       <span id="costoTotalDisplay" class="total-amount" style="font-size:1.8rem">$0</span>
@@ -196,13 +197,14 @@ footer{text-align:center;padding:24px;color:var(--text2);font-size:.75rem}
       <span id="falloAjuste" style="color:var(--accent)"></span>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-      <span style="color:var(--text2);font-size:.85rem">Precio de venta:</span>
+      <span style="color:var(--text2);font-size:.85rem">Precio de venta sugerido:</span>
       <div style="text-align:right">
         <div><span id="precioVentaDisplay" class="venta-amount" style="font-size:1.3rem">$0</span></div>
         <div id="comisionInfo" class="hidden"><span style="font-size:.75rem;color:var(--text2)">+ comisión → </span><span id="precioFinalDisplay" style="font-weight:700;color:var(--accent);font-size:1.1rem">$0</span></div>
       </div>
     </div>
-    <div style="font-size:.85rem;font-weight:500;margin-bottom:8px;color:var(--text2)">Desglose:</div>
+
+    <div style="font-size:.85rem;font-weight:500;margin-bottom:8px;color:var(--text2)">Desglose por factor:</div>
     <div class="breakdown" id="breakdown">
       <div class="breakdown-item"><span>🧵 Filamento</span><span id="costoFilamento">$0</span></div>
       <div class="breakdown-item"><span>⚡ Electricidad</span><span id="costoElectricidad">$0</span></div>
@@ -213,200 +215,61 @@ footer{text-align:center;padding:24px;color:var(--text2);font-size:.75rem}
       <div class="breakdown-item"><span>👷 Mano de obra</span><span id="costoManoObra">$0</span></div>
     </div>
     <div class="chart-container"><canvas id="costChart"></canvas></div>
+    <button type="button" id="guardarBtn" class="btn-primary">💾 Guardar en historial</button>
   </section>
 
-  <!-- LISTA DE PERFILES -->
-  <section id="perfiles">
-    <h2>📁 Mis perfiles</h2>
-    <div class="perfil-actions">
+  <!-- HISTORIAL -->
+  <section id="historial" class="hidden">
+    <h2>📊 Historial</h2>
+    <div class="historial-actions">
       <button type="button" id="exportBtn" class="btn-small">📥 Exportar CSV</button>
+      <button type="button" id="limpiarHistorial" class="btn-small btn-danger">🗑️ Limpiar</button>
     </div>
-    <div id="perfilesLista"></div>
+    <div id="historialLista"></div>
   </section>
-
-  <footer>3D Print Cost Calculator · Todos los valores son editables</footer>
+  <footer>3D Print Cost Calculator · Todos los valores son editables · Los datos se guardan automáticamente</footer>
 </div>
 
 <script>
-// Templates de accesorios
+// Templates de accesorios por tipo
 const ACC_TEMPLATES={llavero:[{nombre:'Argolla partida 20mm',cant:1,precio:200},{nombre:'Mosquetón chico',cant:1,precio:250}],lampara:[{nombre:'Portalámparas E27',cant:1,precio:3000},{nombre:'Cable H05VV-F 1.5m',cant:1,precio:2500},{nombre:'Enchufe',cant:1,precio:1500},{nombre:'Interruptor',cant:1,precio:2000},{nombre:'Bombilla LED',cant:1,precio:3000}],soporte:[{nombre:'Adhesivo 3M VHB',cant:1,precio:1000}],macetero:[{nombre:'Cordel 3mm (1m)',cant:1,precio:300},{nombre:'Bandeja recolectora',cant:1,precio:1500}],juguete:[{nombre:'Ojos seguridad 10mm',cant:1,precio:300}],caja:[{nombre:'Bisagra pequeña',cant:1,precio:1500},{nombre:'Imán neodimio 10x3mm',cant:2,precio:500}],electronico:[{nombre:'Arduino / RPi',cant:1,precio:15000},{nombre:'Cables + conectores',cant:1,precio:3000},{nombre:'Fuente de poder',cant:1,precio:5000}],otro:[],ninguno:[]};
 const EMPAQUE_COSTS={ninguno:0,bolsa:150,cajaChica:400,cajaMediana:1000,personalizado:0};
 const $=id=>document.getElementById(id);
-const formFields=['nombre','tipoProyecto','precioRollo','pesoRollo','gramosUsados','potencia','tiempoHoras','tarifaLuz','precioImpresora','vidaUtil','mantenimiento','manoObraHoras','valorHora','margen','tipoEmpaque','costoEmpaque','costoSticker','tasaFallo','comision'];
-const el={};formFields.forEach(id=>el[id]=$(id));
+const ids=['nombre','tipoProyecto','precioRollo','pesoRollo','gramosUsados','potencia','tiempoHoras','tarifaLuz','precioImpresora','vidaUtil','mantenimiento','manoObraHoras','valorHora','margen','tipoEmpaque','costoEmpaque','costoSticker','tasaFallo','comision'];
+const el={};ids.forEach(id=>el[id]=$(id));
 const accContainer=$('accesoriosContainer');
+const resultados=$('resultados');
+const historial=$('historial');
+const histLista=$('historialLista');
 let chart=null;
-let perfilActualId=null;
 
 document.addEventListener('DOMContentLoaded',()=>{
-  const s=localStorage.getItem('theme');
-  if(s==='light'){document.body.classList.add('light');$('themeToggle').textContent='🌙'}else{$('themeToggle').textContent='☀️'}
-  setup();actualizarAcc();calc();renderPerfiles();
+  // Theme
+  const saved=localStorage.getItem('theme');
+  if(saved==='light'){document.body.classList.add('light');$('themeToggle').textContent='🌙'}else{$('themeToggle').textContent='☀️'}
+  loadForm();setup();actualizarAcc();calc();loadHist();
 });
 
 function setup(){
-  const f=document.getElementById('calcForm');
+  f=document.getElementById('calcForm');
   f.querySelectorAll('input,select').forEach(e=>{e.addEventListener('input',calc);e.addEventListener('change',calc)});
   el.tipoProyecto.addEventListener('change',actualizarAcc);
   $('addAccesorio').addEventListener('click',()=>{addRow('',1,0);calc()});
   accContainer.addEventListener('click',e=>{if(e.target.classList.contains('remove-acc')){e.target.closest('.accesorio-row').remove();calc()}});
   accContainer.addEventListener('input',calc);
   el.tipoEmpaque.addEventListener('change',()=>{const v=el.tipoEmpaque.value;if(v!=='personalizado')el.costoEmpaque.value=EMPAQUE_COSTS[v];calc()});
+  $('guardarBtn').addEventListener('click',guardar);
+  $('exportBtn').addEventListener('click',exportCSV);
+  $('limpiarHistorial').addEventListener('click',()=>{if(!confirm('¿Eliminar todo?'))return;localStorage.removeItem('printCostHistory');loadHist()});
   $('themeToggle').addEventListener('click',()=>{
     document.body.classList.toggle('light');
     const l=document.body.classList.contains('light');
     localStorage.setItem('theme',l?'light':'dark');
     $('themeToggle').textContent=l?'🌙':'☀️';
-    if($('costoTotalDisplay').textContent!=='$0')calc()
+    const t=$('costoTotalDisplay').textContent;if(t&&t!=='$0')calc()
   });
-  // Botones perfiles
-  $('btnGuardar').addEventListener('click',guardarPerfil);
-  $('btnGuardarComo').addEventListener('click',()=>{
-    const n=prompt('Nombre para este perfil:');
-    if(n&&n.trim())guardarPerfil(n.trim());
-  });
-  $('btnEliminarPerfil').addEventListener('click',()=>{
-    if(!perfilActualId)return;
-    if(!confirm('¿Eliminar perfil "'+obtenerNombrePerfil(perfilActualId)+'"?'))return;
-    eliminarPerfil(perfilActualId);
-  });
-  $('selectorPerfil').addEventListener('change',()=>{
-    const id=$('selectorPerfil').value;
-    if(id)cargarPerfil(id);
-    else{perfilActualId=null;calc()}
-  });
-  $('exportBtn').addEventListener('click',exportCSV);
 }
 
-// ====== PERFILES ======
-function leerFormulario(){
-  const data={};
-  formFields.forEach(id=>{const e=$(id);if(e)data[id]=e.value});
-  const accs=[];accContainer.querySelectorAll('.accesorio-row').forEach(r=>{const i=r.querySelectorAll('input');accs.push({nombre:i[0]?.value||'',cant:i[1]?.value||'1',precio:i[2]?.value||'0'})});
-  data.accesorios=accs;
-  return data;
-}
-function escribirFormulario(data){
-  formFields.forEach(id=>{const e=$(id);if(e&&data[id]!==undefined)e.value=data[id]});
-  if(data.accesorios&&data.accesorios.length>0){
-    accContainer.innerHTML='';
-    data.accesorios.forEach(a=>addRow(a.nombre,parseInt(a.cant)||1,parseInt(a.precio)||0));
-  }else{actualizarAcc()}
-  // Actualizar empaque display
-  const v=el.tipoEmpaque.value;
-  if(v!=='personalizado'&&EMPAQUE_COSTS[v]!==undefined)el.costoEmpaque.value=EMPAQUE_COSTS[v];
-}
-function leerAccGlobal(){
-  let t=0;
-  accContainer.querySelectorAll('.accesorio-row').forEach(r=>{
-    const i=r.querySelectorAll('input');const c=parseFloat(i[1]?.value)||0;const p=parseFloat(i[2]?.value)||0;
-    if(i[0]?.value&&c>0)t+=c*p;
-  });
-  return t;
-}
-function obtenerNombrePerfil(id){
-  const perfiles=JSON.parse(localStorage.getItem('perfiles3d')||'[]');
-  const p=perfiles.find(x=>x.id===id);
-  return p?p.nombre:'';
-}
-function guardarPerfil(nombreNuevo){
-  let perfiles=JSON.parse(localStorage.getItem('perfiles3d')||'[]');
-  const data=leerFormulario();
-  const nombre=nombreNuevo||el.nombre.value.trim()||'Sin nombre';
-
-  if(perfilActualId){
-    // Actualizar existente
-    const idx=perfiles.findIndex(p=>p.id===perfilActualId);
-    if(idx>=0){perfiles[idx]={...perfiles[idx],...data,nombre,modificado:Date.now()}}
-    else{perfiles.unshift({id:Date.now(),nombre,...data,creado:Date.now(),modificado:Date.now()})}
-  }else{
-    // Nuevo
-    perfilActualId=Date.now();
-    perfiles.unshift({id:perfilActualId,nombre,...data,creado:Date.now(),modificado:Date.now()});
-  }
-  localStorage.setItem('perfiles3d',JSON.stringify(perfiles));
-  renderPerfiles();
-  calc();
-}
-function cargarPerfil(id){
-  const perfiles=JSON.parse(localStorage.getItem('perfiles3d')||'[]');
-  const p=perfiles.find(x=>x.id==id);
-  if(!p)return;
-  perfilActualId=p.id;
-  escribirFormulario(p);
-  $('selectorPerfil').value=p.id;
-  calc();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function eliminarPerfil(id){
-  let perfiles=JSON.parse(localStorage.getItem('perfiles3d')||'[]');
-  perfiles=perfiles.filter(p=>p.id!=id);
-  localStorage.setItem('perfiles3d',JSON.stringify(perfiles));
-  if(perfilActualId==id){perfilActualId=null;$('selectorPerfil').value=''}
-  renderPerfiles();
-}
-function renderPerfiles(){
-  const perfiles=JSON.parse(localStorage.getItem('perfiles3d')||'[]');
-  // Selector
-  const sel=$('selectorPerfil');
-  const valActual=sel.value;
-  sel.innerHTML='<option value="">— Nuevo cálculo —</option>';
-  perfiles.forEach(p=>{
-    const o=document.createElement('option');
-    o.value=p.id;o.textContent=p.nombre+(p.tipoProyecto&&p.tipoProyecto!=='ninguno'?' ('+p.tipoProyecto+')':'');
-    sel.appendChild(o);
-  });
-  if(valActual&&perfiles.some(p=>p.id==valActual))sel.value=valActual;
-
-  // Lista
-  const lista=$('perfilesLista');
-  if(perfiles.length===0){lista.innerHTML='<p style="color:var(--text2);font-size:.9rem">Aún no hay perfiles guardados. Calcula una pieza y guárdala.</p>';return}
-  lista.innerHTML='';
-  perfiles.forEach(p=>{
-    const d=document.createElement('div');d.className='perfil-item';
-    const tipoLabel=p.tipoProyecto&&p.tipoProyecto!=='ninguno'?p.tipoProyecto:'';
-    const fecha=p.modificado?new Date(p.modificado).toLocaleDateString('es-CL'):'';
-    d.innerHTML=`
-      <div class="pi-info">
-        <div class="pi-name">${p.nombre}${tipoLabel?' <span class="pi-tag">'+tipoLabel+'</span>':''}</div>
-        <div class="pi-meta">${fecha?'Modificado: '+fecha:''}</div>
-      </div>
-      <div class="pi-actions">
-        <button class="load-btn" data-id="${p.id}">Cargar</button>
-        <button class="dup-btn" data-id="${p.id}">Duplicar</button>
-        <button class="del-btn" data-id="${p.id}">✕</button>
-      </div>`;
-    lista.appendChild(d);
-  });
-  // Eventos botones
-  lista.querySelectorAll('.load-btn').forEach(b=>b.addEventListener('click',()=>cargarPerfil(b.dataset.id)));
-  lista.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click',()=>{if(confirm('¿Eliminar este perfil?'))eliminarPerfil(b.dataset.id)}));
-  lista.querySelectorAll('.dup-btn').forEach(b=>{
-    b.addEventListener('click',()=>{
-      const perfiles=JSON.parse(localStorage.getItem('perfiles3d')||'[]');
-      const orig=perfiles.find(p=>p.id==b.dataset.id);
-      if(!orig)return;
-      const copy={...orig,id:Date.now(),nombre:orig.nombre+' (copia)',creado:Date.now(),modificado:Date.now()};
-      perfiles.unshift(copy);
-      localStorage.setItem('perfiles3d',JSON.stringify(perfiles));
-      renderPerfiles();
-    });
-  });
-}
-function exportCSV(){
-  const perfiles=JSON.parse(localStorage.getItem('perfiles3d')||'[]');
-  if(perfiles.length===0)return;
-  let csv='Nombre,Tipo,Fecha,Filamento($/g),Gramos,Potencia(W),Tiempo(h),Tarifa($/kWh),Imp($),Vida(h),Mant($/h),MO(h),ValorH($),Margen(%),Fallo(%),Comision(%)\n';
-  perfiles.forEach(p=>{
-    csv+=`"${p.nombre}","${p.tipoProyecto||''}","${new Date(p.modificado||p.creado).toLocaleDateString('es-CL')}",${p.precioRollo||''},${p.gramosUsados||''},${p.potencia||''},${p.tiempoHoras||''},${p.tarifaLuz||''},${p.precioImpresora||''},${p.vidaUtil||''},${p.mantenimiento||''},${p.manoObraHoras||''},${p.valorHora||''},${p.margen||''},${p.tasaFallo||''},${p.comision||''}\n`;
-  });
-  const blob=new Blob([csv],{type:'text/csv'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='perfiles-3d.csv';a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ====== ACCESORIOS ======
 function actualizarAcc(){
   const t=el.tipoProyecto.value;
   const tmpl=ACC_TEMPLATES[t]||[];
@@ -420,67 +283,95 @@ function addRow(nombre,cant,precio){
   d.innerHTML=`<input type="text" class="acc-nombre" placeholder="Nombre" value="${nombre}"><input type="number" class="acc-cant" placeholder="Cant" value="${cant}" min="0" step="1"><input type="number" class="acc-precio" placeholder="$ c/u" value="${precio}" min="0" step="50"><button type="button" class="icon-btn remove-acc">✕</button>`;
   accContainer.appendChild(d);
 }
+function totalAcc(){
+  let t=0;
+  accContainer.querySelectorAll('.accesorio-row').forEach(r=>{
+    const i=r.querySelectorAll('input');
+    const c=parseFloat(i[1]?.value)||0;const p=parseFloat(i[2]?.value)||0;
+    if(i[0]?.value&&c>0)t+=c*p;
+  });
+  return t;
+}
 
-// ====== CÁLCULO ======
 function calc(){
+  // Filamento
   const gUs=parseFloat(el.gramosUsados.value)||0;
   const pRo=parseFloat(el.precioRollo.value)||0;
   const gRo=parseFloat(el.pesoRollo.value)||1000;
   const cFil=gUs>0&&pRo>0?(pRo/gRo)*gUs:0;
-
+  // Electricidad
   const pot=parseFloat(el.potencia.value)||0;
   const tH=parseFloat(el.tiempoHoras.value)||0;
   const tar=parseFloat(el.tarifaLuz.value)||0;
   const cElec=tH>0?(pot/1000)*tH*tar:0;
-
+  // Depreciacion
   const pImp=parseFloat(el.precioImpresora.value)||0;
   const vUtil=parseFloat(el.vidaUtil.value)||3000;
   const cDep=tH>0&&pImp>0?(pImp/vUtil)*tH:0;
-
+  // Mantenimiento
   const mant=parseFloat(el.mantenimiento.value)||0;
   const cMant=tH>0?mant*tH:0;
-
-  const cAcc=leerAccGlobal();
+  // Accesorios + Envoltorio + Mano de obra
+  const cAcc=totalAcc();
   const cEnv=(parseFloat(el.costoEmpaque.value)||0)+(parseFloat(el.costoSticker.value)||0);
   const moH=parseFloat(el.manoObraHoras.value)||0;
   const moV=parseFloat(el.valorHora.value)||0;
   const cMO=moH*moV;
-
+  // Costo base
   const base=cFil+cElec+cDep+cMant+cAcc+cEnv+cMO;
 
+  // Tasa de fallo
   const fallo=parseFloat(el.tasaFallo.value)||0;
   const factorFallo=fallo>0?1/(1-fallo/100):1;
   const costoConFallo=base*factorFallo;
 
+  // Margen
   const mPct=parseFloat(el.margen.value)||0;
   const precioSinComision=costoConFallo*(1+mPct/100);
 
+  // Comision
   const com=parseFloat(el.comision.value)||0;
   const precioFinal=com>0?precioSinComision/(1-com/100):precioSinComision;
 
+  // Mostrar
   if(base>0){
-    $('resultados').classList.remove('hidden');
+    resultados.classList.remove('hidden');
+
+    // Costo base
     $('costoTotalDisplay').textContent='$'+base.toLocaleString('es-CL',{maximumFractionDigits:0});
 
+    // Info de fallo
     const fInfo=$('falloInfo');
     if(fallo>0){
-      fInfo.classList.remove('hidden');fInfo.style.display='flex';
+      fInfo.classList.remove('hidden');
+      fInfo.style.display='flex';
       $('falloAjuste').textContent='$'+costoConFallo.toLocaleString('es-CL',{maximumFractionDigits:0})+' (+'+(factorFallo-1)*100+'%)';
-    }else{fInfo.classList.add('hidden');fInfo.style.display='none'}
+    } else {
+      fInfo.classList.add('hidden');
+      fInfo.style.display='none';
+    }
 
+    // Precio de venta
     $('precioVentaDisplay').textContent='$'+precioSinComision.toLocaleString('es-CL',{maximumFractionDigits:0});
 
+    // Info de comision
     const cInfo=$('comisionInfo');
     if(com>0){
-      cInfo.classList.remove('hidden');cInfo.style.display='block';
+      cInfo.classList.remove('hidden');
+      cInfo.style.display='block';
       $('precioFinalDisplay').textContent='$'+precioFinal.toLocaleString('es-CL',{maximumFractionDigits:0});
-    }else{cInfo.classList.add('hidden');cInfo.style.display='none'}
+    } else {
+      cInfo.classList.add('hidden');
+      cInfo.style.display='none';
+    }
 
+    // Desglose
     const costs=[cFil,cElec,cDep,cMant,cAcc,cEnv,cMO];
     ['costoFilamento','costoElectricidad','costoDepreciacion','costoMantenimiento','costoAccesorios','costoEnvoltorio','costoManoObra'].forEach((id,i)=>{
       $(id).textContent='$'+costs[i].toLocaleString('es-CL',{maximumFractionDigits:0});
     });
 
+    // Chart
     const labs=['🧵 Filamento','⚡ Electricidad','🖨️ Depreciación','🔧 Mantenimiento','🔧 Accesorios','📦 Envoltorio','👷 Mano de obra'];
     const fltL=[],fltD=[];
     costs.forEach((v,i)=>{if(v>0){fltL.push(labs[i]);fltD.push(v)}});
@@ -493,8 +384,64 @@ function calc(){
         options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{color:'#e0e0e0',font:{size:11},padding:8}}}}
       });
     }
-  }else{$('resultados').classList.add('hidden')}
+  } else {
+    resultados.classList.add('hidden');
+  }
 }
+
+function guardar(){
+  const name=el.nombre.value.trim()||'Sin nombre';
+  const txt=$('costoTotalDisplay').textContent;
+  const total=parseFloat(txt.replace(/[$,]/g,''))||0;
+  if(total===0)return;
+  let hist=JSON.parse(localStorage.getItem('printCostHistory')||'[]');
+  const fInfo=$('precioFinalDisplay');
+  const pFinal=fInfo&&fInfo.style.display!=='none'?fInfo.textContent:'';
+  hist.unshift({id:Date.now(),fecha:new Date().toLocaleDateString('es-CL'),nombre:name,total:total,precioFinal:pFinal});
+  if(hist.length>50)hist=hist.slice(0,50);
+  localStorage.setItem('printCostHistory',JSON.stringify(hist));
+  loadHist();calc();
+}
+function loadHist(){
+  const hist=JSON.parse(localStorage.getItem('printCostHistory')||'[]');
+  if(hist.length===0){historial.classList.add('hidden');return}
+  historial.classList.remove('hidden');
+  histLista.innerHTML='';
+  hist.forEach(h=>{
+    const d=document.createElement('div');d.className='historial-item';
+    d.innerHTML=`<div><div class="hi-name">${h.nombre}</div><div class="hi-date">${h.fecha}</div></div><div class="hi-cost">$${h.total.toLocaleString('es-CL',{maximumFractionDigits:0})}</div>`;
+    histLista.appendChild(d);
+  });
+}
+function exportCSV(){
+  const hist=JSON.parse(localStorage.getItem('printCostHistory')||'[]');
+  if(hist.length===0)return;
+  let csv='Fecha,Nombre,Costo Total\n';
+  hist.forEach(h=>{csv+=`${h.fecha},"${h.nombre}",${h.total}\n`});
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='costos-3d-historial.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+function loadForm(){
+  const saved=localStorage.getItem('printCostForm');
+  if(!saved)return;
+  try{
+    const data=JSON.parse(saved);
+    Object.keys(data).forEach(k=>{if(k==='accesorios')return;const elm=$(k);if(elm)elm.value=data[k]});
+    if(data.accesorios&&data.accesorios.length>0){
+      accContainer.innerHTML='';
+      data.accesorios.forEach(a=>addRow(a.nombre,parseInt(a.cant)||1,parseInt(a.precio)||0));
+    }
+  }catch(e){}
+}
+setInterval(()=>{
+  const data={};
+  ids.forEach(id=>{const e=$(id);if(e)data[id]=e.value});
+  const accs=[];accContainer.querySelectorAll('.accesorio-row').forEach(r=>{const i=r.querySelectorAll('input');accs.push({nombre:i[0]?.value||'',cant:i[1]?.value||'1',precio:i[2]?.value||'0'})});
+  data.accesorios=accs;
+  localStorage.setItem('printCostForm',JSON.stringify(data));
+},5000);
 </script>
 </body>
 </html>
